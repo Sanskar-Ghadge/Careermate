@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* Edit Job Page Styles */
+.form-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #10b981, #059669, #047857);
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.form-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #10b981, #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.form-header p {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+.job-form {
+    display: grid;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #10b981;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* For grid layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+    grid-column: 1 / -1; /* Make it span full width in grid */
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+    color: white;
+}
+
+.btn.secondary {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
+}
+.btn.secondary:hover {
+    box-shadow: 0 10px 30px rgba(107, 114, 128, 0.5);
+}
+
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>Edit Job Posting</h1>
+        <p>Update the details for your job: <strong>{{ job.title }}</strong></p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class.="flash-box flash-{{ category or 'info' }}" style="padding: 15px; border-radius: 10px; font-weight: 600; margin-bottom: 20px; background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Note: method="POST" sends the data back to the *same* /edit_job route -->
+    <form class="job-form form-grid" method="POST">
+        
+        <div class="form-group full-width">
+            <label for="title">Job Title</label>
+            <!-- We use value="{{ job.title }}" to pre-fill the form -->
+            <input type="text" id="title" name="title" value="{{ job.title or '' }}" required>
+        </div>
+        
+        <div class="form-group full-width">
+            <label for="description">Job Description</label>
+            <!-- Textareas are pre-filled between the tags -->
+            <textarea id="description" name="description" required>{{ job.description or '' }}</textarea>
+        </div>
+        
+        <div class="form-group full-width">
+            <label for="requirements">Requirements (comma-separated)</label>
+            <textarea id="requirements" name="requirements">{{ job.requirements or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" value="{{ job.location or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="salary_range">Salary Range</label>
+            <input type="text" id="salary_range" name="salary_range" value="{{ job.salary_range or '' }}" placeholder="e.g., 50000 - 70000">
+        </div>
+
+        <div class="form-group">
+            <label for="job_type">Job Type</label>
+            <select id="job_type" name="job_type" required>
+                <!-- This Jinja logic selects the correct option from the dropdown -->
+                <option value="Full-time" {% if job.job_type == 'Full-time' %}selected{% endif %}>Full-time</option>
+                <option value="Part-time" {% if job.job_type == 'Part-time' %}selected{% endif %}>Part-time</option>
+                <option value="Contract" {% if job.job_type == 'Contract' %}selected{% endif %}>Contract</option>
+                <option value="Internship" {% if job.job_type == 'Internship' %}selected{% endif %}>Internship</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="experience_level">Experience Level</label>
+            <select id="experience_level" name="experience_level">
+                <option value="Entry-level" {% if job.experience_level == 'Entry-level' %}selected{% endif %}>Entry-level</option>
+                <option value="Mid-level" {% if job.experience_level == 'Mid-level' %}selected{% endif %}>Mid-level</option>
+                <option value="Senior-level" {% if job.experience_level == 'Senior-level' %}selected{% endif %}>Senior-level</option>
+                <option value="Manager" {% if job.experience_level == 'Manager' %}selected{% endif %}>Manager</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('company_dashboard') }}" class="btn secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

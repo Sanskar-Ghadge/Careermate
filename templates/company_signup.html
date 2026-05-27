@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* Company Signup Page Styles */
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 100%;
+    padding: 0;
+}
+
+.signup-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.signup-header {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    padding: 50px 40px;
+    text-align: center;
+}
+
+.signup-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.signup-header p {
+    margin: 15px 0 0 0;
+    opacity: 0.95;
+    font-size: 1.2rem;
+}
+
+.signup-form {
+    padding: 50px 40px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #374151;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+.signup-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.signup-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6);
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.login-link a {
+    color: #8b5cf6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .signup-container {
+        margin: 20px;
+    }
+    
+    .signup-header {
+        padding: 40px 30px;
+    }
+    
+    .signup-form {
+        padding: 40px 30px;
+    }
+}
+</style>
+
+<div class="signup-container">
+    <div class="signup-header">
+        <h1>Company Registration</h1>
+        <p>Create your employer account</p>
+    </div>
+    
+    <div class="signup-form">
+        <form method="post">
+            <div class="form-group">
+                <label for="company_name">Company Name</label>
+                <input id="company_name" name="company_name" type="text" placeholder="Enter company name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Company Email</label>
+                <input id="email" name="email" type="email" placeholder="Enter company email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" placeholder="Create password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input id="confirm_password" name="confirm_password" type="password" placeholder="Confirm password" required>
+            </div>
+            
+            <button type="submit" class="signup-btn">
+                Create Company Account
+            </button>
+        </form>
+        
+        <div class="login-link">
+            <p>Already have a company account? <a href="{{ url_for('company_login') }}">Login here</a></p>
+            <p style="margin-top: 10px;">
+                <a href="{{ url_for('signup') }}">Individual signup here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.profile-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed, #a855f7);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.profile-header p {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+.profile-form {
+    margin-bottom: 40px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #374151;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    color: #374151;
+    font-family: inherit;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+.submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: transparent;
+    color: #8b5cf6;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid #8b5cf6;
+}
+
+.action-btn:hover {
+    background: #8b5cf6;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    
+    .profile-header h1 {
+        font-size: 2rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Company Profile</h1>
+        <p>Update your company information</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="background: #d1fae5; border: 2px solid #10b981; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                {% for message in messages %}
+                    <p style="color: #065f46; margin: 0;">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" class="profile-form">
+        <div class="form-group">
+            <label for="company_name">Company Name *</label>
+            <input type="text" id="company_name" name="company_name" value="{{ company.company_name if company else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" value="{{ company.email if company else '' }}" required readonly style="background: #e5e7eb;">
+        </div>
+
+        <div class="form-group">
+            <label for="industry">Industry</label>
+            <input type="text" id="industry" name="industry" value="{{ company.industry if company.industry else '' }}" placeholder="e.g., Technology, Healthcare, Finance">
+        </div>
+
+        <div class="form-group">
+            <label for="size">Company Size</label>
+            <select id="size" name="size">
+                <option value="">Select Company Size</option>
+                <option value="1-10" {% if company.size == '1-10' %}selected{% endif %}>1-10 employees</option>
+                <option value="11-50" {% if company.size == '11-50' %}selected{% endif %}>11-50 employees</option>
+                <option value="51-200" {% if company.size == '51-200' %}selected{% endif %}>51-200 employees</option>
+                <option value="201-500" {% if company.size == '201-500' %}selected{% endif %}>201-500 employees</option>
+                <option value="501-1000" {% if company.size == '501-1000' %}selected{% endif %}>501-1000 employees</option>
+                <option value="1000+" {% if company.size == '1000+' %}selected{% endif %}>1000+ employees</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Company Description</label>
+            <textarea id="description" name="description" placeholder="Describe your company culture, mission, and values...">{{ company.description if company.description else '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="website">Website</label>
+            <input type="url" id="website" name="website" value="{{ company.website if company.website else '' }}" placeholder="https://example.com">
+        </div>
+
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-save"></i> Update Profile
+        </button>
+    </form>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('company_dashboard') }}" class="action-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <a href="{{ url_for('post_job') }}" class="action-btn">
+            <i class="fas fa-briefcase"></i> Post a Job
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Company profile page loaded');
+    
+    // Add form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const companyName = document.getElementById('company_name').value.trim();
+        if (!companyName) {
+            e.preventDefault();
+            alert('Please enter a company name.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

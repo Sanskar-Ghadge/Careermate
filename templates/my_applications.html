@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* My Applications Page Styles */
+.applications-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.applications-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.applications-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6d28d9, #4f46e5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+}
+
+.applications-header p {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+/* No Applications State */
+.no-applications-box {
+    text-align: center;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 15px;
+    border: 2px dashed #cbd5e1;
+    margin: 30px 0;
+}
+
+.no-applications-box p {
+    font-size: 1.3rem;
+    color: #64748b;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.no-applications-box .btn {
+    background: linear-gradient(135deg, #6d28d9, #4f46e5);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.no-applications-box .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(109, 40, 217, 0.3);
+}
+
+
+/* Applications List */
+.applications-list {
+    display: grid;
+    gap: 25px;
+    margin: 40px 0;
+}
+
+.application-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 2px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.application-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: #6d28d9;
+}
+
+.application-card h3 {
+    font-size: 1.6rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.application-card p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #4b5563;
+}
+.application-card p strong {
+    color: #374151;
+    font-weight: 600;
+}
+.application-card p.applied-date {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-submitted {
+    background: #eef2ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+}
+.status-interviewing {
+    background: #fef3c7;
+    color: #d97706;
+    border: 1px solid #fde68a;
+}
+.status-rejected {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+.status-hired {
+    background: #d1fae5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+
+
+/* Action Buttons */
+.applications-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 50px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #6d28d9, #4f46e5);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(109, 40, 217, 0.3);
+    border: none;
+    cursor: pointer;
+}
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(109, 40, 217, 0.5);
+    color: white;
+}
+.btn.secondary {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    color: #4f46e5;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+.btn.secondary:hover {
+    background: white;
+    border-color: #6d28d9;
+    color: #6d28d9;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+</style>
+
+<div class="applications-container">
+    <div class="applications-header">
+        <h1>My Applications 📄</h1>
+        <p>Track the status of your job applications</p>
+    </div>
+
+    <!-- THIS IS THE CRITICAL LOGIC -->
+    {% if applications %}
+        <!-- If there ARE applications, loop through them -->
+        <div class="applications-list">
+            {% for app in applications %}
+                <div class="application-card">
+                    <div>
+                        <h3>{{ app.job_title }}</h3>
+                        <p><strong>Company:</strong> {{ app.company_name }}</p>
+                        <p class="applied-date"><strong>Applied On:</strong> {{ app.applied_at.strftime('%Y-%m-%d') }}</p>
+                    </div>
+                    <div>
+                        <span class="status-badge status-{{ app.status|lower }}">{{ app.status }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- If there are NO applications, show the "No Applications" box -->
+        <div class="no-applications-box">
+             <p>No Applications Yet</p>
+             <p>You haven't applied to any jobs yet. Start browsing available positions!</p>
+             <a href="{{ url_for('current_jobs') }}" class="btn">Browse Jobs</a>
+        </div>
+    {% endif %}
+
+    <div class="applications-actions">
+        <a class="btn secondary" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <a class="btn" href="{{ url_for('current_jobs') }}">
+            <i class="fas fa-search"></i> Browse More Jobs
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to application cards
+    const appCards = document.querySelectorAll('.application-card');
+    appCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+</script>
+{% endblock %}
+```
+
+---
+
+### Step 2: Fix Your `dashboard` (This is still broken)
+
+Now that "My Applications" is fixed, you still need to fix your **Dashboard** (which shows "0 Jobs Applied").
+
+As I said in my last message, your `dashboard` function in `app.py` is missing the code to count applications.
+
+**Replace** your current `dashboard` function in `app.py` with this code:
+
+```python
+# PASTE THIS INTO YOUR app.py (replacing your old dashboard function)
+
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session or session.get('user_type') != 'individual':
+        return redirect(url_for('login'))
+    
+    user = get_user_by_id(session['user_id'])
+    if not user:
+        session.clear()
+        return redirect(url_for('login'))
+
+    strength = user.get('profile_strength', 0) or 0
+    incomplete = (strength < 100 or not user.get('skills'))
+
+    # --- ADD THIS NEW CODE ---
+    user_id = session['user_id']
+    
+    # 1. Get Application Count
+    applications = get_user_applications(user_id)
+    application_count = len(applications)
+    
+    # 2. Get Interview Count
+    interview_count = 0
+    for app in applications:
+        if app['status'] == 'Interviewing':
+            interview_count += 1
+            
+    # 3. Get Total Available Jobs
+    all_jobs = get_all_jobs()
+    total_jobs_count = len(all_jobs)
+    # --- END OF NEW CODE ---
+
+    # Now we pass all the data to the HTML
+    return render_template(
+        'dashboard.html', 
+        name=user.get('name'), 
+        strength=strength, 
+        incomplete=incomplete,
+        application_count=application_count,    # <-- NEW
+        interview_count=interview_count,        # <-- NEW
+        total_jobs_count=total_jobs_count     # <-- NEW
+    )
+```
+
+### Step 3: Update `dashboard.html`
+
+Finally, update your `templates/dashboard.html` to use these new numbers.
+
+**Change this:**
+```html
+<div class="stat-card">
+    <div class="stat-number">0</div>
+    <div class="stat-label">Jobs Applied</div>
+</div>
+```
+
+**To this:**
+```html
+<div class="stat-card">
+    <div class="stat-number">{{ application_count }}</div>
+    <div class="stat-label">Jobs Applied</div>
+</div>

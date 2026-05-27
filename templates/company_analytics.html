@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* Analytics Page Styles */
+.analytics-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.analytics-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed, #a855f7);
+}
+
+.analytics-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.analytics-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.analytics-header p {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f8fafc, #eef2ff);
+    padding: 25px 20px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: #8b5cf6;
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.15);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #8b5cf6;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+/* Charts Section */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 50px 0;
+}
+
+.chart-container {
+    background: #fdfdff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f1f5f9;
+}
+
+.chart-container h2 {
+    text-align: center;
+    color: #374151;
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+}
+
+/* Job List Table */
+.job-list-section {
+    margin: 50px 0;
+}
+
+.job-list-section h2 {
+    text-align: center;
+    color: #374151;
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+}
+
+.job-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.job-list-table th,
+.job-list-table td {
+    padding: 18px 22px;
+    text-align: left;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.job-list-table th {
+    background-color: #f8fafc;
+    color: #6b7280;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.job-list-table td {
+    color: #374151;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.job-list-table tr:last-child td {
+    border-bottom: none;
+}
+
+.job-list-table tr:hover {
+    background-color: #fcfcff;
+}
+
+.view-link {
+    display: inline-block;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.view-link:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-back:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(107, 114, 128, 0.5);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .analytics-container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    .job-list-table th,
+    .job-list-table td {
+        padding: 14px 16px;
+    }
+}
+</style>
+
+<!-- Add Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="analytics-container">
+    <div class="analytics-header">
+        <h1>Hiring Analytics</h1>
+        <p>Performance insights for {{ company.company_name }}</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_jobs }}</div>
+            <div class="stat-label">Total Jobs Posted</div>
+        </div>
+        <div class="stat-card">
+            <!-- ***** CHANGED THIS LINE ***** -->
+            <div class="stat-number">{{ total_applications }}</div>
+            <div class="stat-label">Total Applications</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ interview_count }}</div> <!-- Replace with interviews var -->
+            <div class="stat-label">Interviews Scheduled</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ hire_count }}</div> <!-- Replace with hires var -->
+            <div class="stat-label">Total Hires</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+        <div class="chart-container">
+            <h2>Applications per Job</h2>
+            <canvas id="applicationsChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h2>Application Status</h2>
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Job List Table -->
+    <div class="job-list-section">
+        <h2>Job Posting Performance</h2>
+        <table class="job-list-table">
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Status</th>
+                    <th>Applications</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if jobs %}
+                    {% for job in jobs %}
+                    <tr>
+                        <td>{{ job.title }}</td>
+                        <td><span style="color: #059669; font-weight: bold;">Active</span></td>
+                        <td>{{ job.application_count or 0 }}</td>
+                        <!-- ***** CHANGED THIS LINE ***** -->
+                        <td><a href="{{ url_for('view_job_applications', job_id=job.id) }}" class="view-link">View Apps</a></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #6b7280; padding: 40px;">No jobs posted yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="{{ url_for('company_dashboard') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // --- Chart 1: Applications per Job (Bar Chart) ---
+        const appCtx = document.getElementById('applicationsChart').getContext('2d');
+        const jobTitles = [
+            {% for job in jobs %}'{{ job.title|e }}',{% endfor %}
+        ];
+        const appCounts = [
+            {% for job in jobs %}{{ job.application_count or 0 }},{% endfor %}
+        ];
+
+        new Chart(appCtx, {
+            type: 'bar',
+            data: {
+                labels: jobTitles,
+                datasets: [{
+                    label: '# of Applications',
+                    data: appCounts,
+                    backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // --- Chart 2: Application Status (Doughnut Chart) ---
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Interviewing', 'Rejected', 'Hired'],
+                datasets: [{
+                    label: 'Application Status',
+                    <!-- ***** CHANGED THIS LINE ***** -->
+                    data: {{ status_data|tojson }},
+                    backgroundColor: [
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(139, 92, 246, 0.7)',
+                        'rgba(239, 68, 68, 0.7)',
+                        'rgba(16, 185, 129, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(139, 92, 246, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(16, 185, 129, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        console.error("Error creating charts: ", e);
+    }
+});
+</script>
+{% endblock %}

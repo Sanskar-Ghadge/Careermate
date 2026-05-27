@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.apply-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.apply-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed, #a855f7);
+}
+
+.apply-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.apply-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.job-preview {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 2px solid #e2e8f0;
+}
+
+.job-preview h3 {
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+
+.apply-form {
+    margin-bottom: 40px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #374151;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    color: #374151;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 150px;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+.submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: transparent;
+    color: #8b5cf6;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid #8b5cf6;
+}
+
+.action-btn:hover {
+    background: #8b5cf6;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .apply-container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    
+    .apply-header h1 {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<div class="apply-container">
+    <div class="apply-header">
+        <h1>Apply for Job</h1>
+        <p>Submit your application for this position</p>
+    </div>
+
+    <!-- Job Preview -->
+    <div class="job-preview">
+        <h3>{{ job.title }}</h3>
+        <p><strong>Company:</strong> {{ job.company_name if job.company_name else 'Unknown Company' }}</p>
+        <p><strong>Location:</strong> {{ job.location or 'Remote' }}</p>
+        <p><strong>Type:</strong> {{ job.job_type or 'Full-time' }}</p>
+        {% if job.salary_range %}
+        <p><strong>Salary:</strong> {{ job.salary_range }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Application Form -->
+    <form method="post" class="apply-form">
+        <div class="form-group">
+            <label for="cover_letter">Cover Letter</label>
+            <textarea id="cover_letter" name="cover_letter" placeholder="Tell us why you're a great fit for this position... (Optional)"></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-paper-plane"></i> Submit Application
+        </button>
+    </form>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('current_jobs') }}" class="action-btn">
+            <i class="fas fa-arrow-left"></i> Back to Jobs
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="action-btn">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter for cover letter
+    const coverLetter = document.getElementById('cover_letter');
+    if (coverLetter) {
+        coverLetter.addEventListener('input', function() {
+            const length = this.value.length;
+            console.log(`Cover letter length: ${length} characters`);
+        });
+    }
+});
+</script>
+{% endblock %}

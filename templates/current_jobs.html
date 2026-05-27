@@ -1,0 +1,451 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.jobs-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.jobs-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed, #a855f7);
+}
+
+.jobs-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.jobs-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.jobs-header p {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+.jobs-grid {
+    display: grid;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.job-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 2px solid #f1f5f9;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.job-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border-radius: 15px 0 0 15px;
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: #8b5cf6;
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.job-title {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin: 0;
+    font-weight: 700;
+}
+
+.company-name {
+    font-size: 1.2rem;
+    color: #6b7280;
+    margin: 5px 0;
+}
+
+.job-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.meta-item i {
+    color: #8b5cf6;
+    width: 16px;
+}
+
+.job-description {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.job-requirements {
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.job-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+    color: white;
+}
+
+.action-btn.secondary {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.action-btn.secondary:hover {
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+}
+
+.action-btn.outline {
+    background: transparent;
+    color: #6b7280;
+    border: 2px solid #6b7280;
+    box-shadow: none;
+}
+
+.action-btn.outline:hover {
+    background: #6b7280;
+    color: white;
+}
+
+.action-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.applied-badge {
+    background: #10b981;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 15px;
+    border: 2px dashed #cbd5e1;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #6b7280;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.empty-state p {
+    color: #9ca3af;
+    margin-bottom: 25px;
+}
+
+.navigation {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: transparent;
+    color: #8b5cf6;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid #8b5cf6;
+}
+
+.nav-btn:hover {
+    background: #8b5cf6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .jobs-container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    
+    .jobs-header h1 {
+        font-size: 2rem;
+    }
+    
+    .job-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .job-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .job-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .navigation {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="jobs-container">
+    <div class="jobs-header">
+        <h1>Current Job Opportunities 🚀</h1>
+        <p>Browse through available positions and apply to your dream job</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="background: #d1fae5; border: 2px solid #10b981; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                {% for message in messages %}
+                    <p style="color: #065f46; margin: 0;">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Jobs Count -->
+    <div style="text-align: center; margin: 20px 0;">
+        <p style="color: #6b7280; font-size: 1.1rem;">
+            <strong>{{ jobs|length }}</strong> job{{ 's' if jobs|length != 1 else '' }} available
+        </p>
+    </div>
+
+    {% if jobs %}
+    <div class="jobs-grid">
+        {% for job in jobs %}
+        <div class="job-card">
+            <div class="job-header">
+                <div>
+                    <h3 class="job-title">{{ job.title }}</h3>
+                    <p class="company-name">{{ job.company_name }}</p>
+                </div>
+                {% if job.id in applied_job_ids %}
+                <div class="applied-badge">
+                    <i class="fas fa-check-circle"></i> Applied
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="job-meta">
+                <div class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ job.location or 'Remote' }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>{{ job.job_type or 'Full-time' }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>{{ job.salary_range or 'Salary not specified' }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>{{ job.experience_level or 'Any experience' }}</span>
+                </div>
+            </div>
+            
+            <div class="job-description">
+                <strong>Job Description:</strong><br>
+                {{ job.description[:250] }}{% if job.description|length > 250 %}...{% endif %}
+            </div>
+            
+            {% if job.requirements %}
+            <div class="job-requirements">
+                <strong>Requirements:</strong><br>
+                {{ job.requirements[:200] }}{% if job.requirements|length > 200 %}...{% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="job-actions">
+                {% if job.id in applied_job_ids %}
+                <button class="action-btn secondary" disabled>
+                    <i class="fas fa-check"></i> Already Applied
+                </button>
+                {% else %}
+                <a href="{{ url_for('apply_job', job_id=job.id) }}" class="action-btn">
+                    <i class="fas fa-paper-plane"></i> Apply Now
+                </a>
+                {% endif %}
+                <button type="button" class="action-btn outline" onclick="showJobDetails({{ job.id }})">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+            </div>
+            
+            <!-- Hidden full details -->
+            <div id="job-details-{{ job.id }}" style="display: none; margin-top: 20px; padding: 20px; background: #f8fafc; border-radius: 10px;">
+                <h4>Full Job Details</h4>
+                <p><strong>Description:</strong> {{ job.description }}</p>
+                {% if job.requirements %}
+                <p><strong>Requirements:</strong> {{ job.requirements }}</p>
+                {% endif %}
+                <p><strong>Posted:</strong> {{ job.created_at }}</p>
+                <button type="button" class="action-btn outline" onclick="hideJobDetails({{ job.id }})" style="margin-top: 10px;">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-briefcase"></i>
+        <h3>No Jobs Available</h3>
+        <p>There are currently no job openings. Please check back later.</p>
+    </div>
+    {% endif %}
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <a href="{{ url_for('dashboard') }}" class="nav-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <a href="{{ url_for('my_applications') }}" class="nav-btn">
+            <i class="fas fa-file-alt"></i> My Applications
+        </a>
+        <a href="{{ url_for('profile') }}" class="nav-btn">
+            <i class="fas fa-user-edit"></i> Update Profile
+        </a>
+    </div>
+</div>
+
+<script>
+function showJobDetails(jobId) {
+    document.getElementById('job-details-' + jobId).style.display = 'block';
+}
+
+function hideJobDetails(jobId) {
+    document.getElementById('job-details-' + jobId).style.display = 'none';
+}
+
+// Add loading animation
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.jobs-container');
+    container.style.opacity = '0';
+    
+    setTimeout(() => {
+        container.style.transition = 'opacity 0.5s ease';
+        container.style.opacity = '1';
+    }, 200);
+    
+    // Add hover effects
+    const jobCards = document.querySelectorAll('.job-card');
+    jobCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* View Applications Page Styles */
+.applications-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header p {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-left: 10px;
+}
+.status-submitted, .status-pending {
+    background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe;
+}
+.status-interviewing {
+    background: #fef3c7; color: #d97706; border: 1px solid #fde68a;
+}
+.status-rejected {
+    background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;
+}
+.status-hired {
+    background: #d1fae5; color: #059669; border: 1px solid #a7f3d0;
+}
+
+/* Applicant List */
+.applicant-list {
+    display: grid;
+    gap: 25px;
+}
+
+.applicant-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 2px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideUp 0.5s ease-out;
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.applicant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: #8b5cf6;
+}
+
+.applicant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.applicant-info h3 {
+    font-size: 1.6rem;
+    color: #1f2937;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+.applicant-info p {
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.applicant-profile-strength {
+    text-align: right;
+}
+.applicant-profile-strength .strength-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #8b5cf6;
+}
+.applicant-profile-strength .strength-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+/* This is the new section for the buttons */
+.applicant-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+.applicant-actions p {
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.btn-interview {
+    background: #fef3c7; color: #b45309;
+}
+.btn-interview:hover {
+    background: #fde68a; box-shadow: 0 4px 15px rgba(253, 230, 138, 0.5);
+}
+.btn-hire {
+    background: #d1fae5; color: #047857;
+}
+.btn-hire:hover {
+    background: #a7f3d0; box-shadow: 0 4px 15px rgba(167, 243, 208, 0.5);
+}
+.btn-reject {
+    background: #fee2e2; color: #b91c1c;
+}
+.btn-reject:hover {
+    background: #fecaca; box-shadow: 0 4px 15px rgba(254, 202, 202, 0.5);
+}
+
+/* Empty State */
+.no-applications-box {
+    text-align: center;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 15px;
+    border: 2px dashed #cbd5e1;
+    margin: 30px 0;
+}
+.no-applications-box p {
+    font-size: 1.3rem;
+    color: #64748b;
+    margin: 0;
+    font-weight: 500;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
+    border: none;
+    cursor: pointer;
+    margin-top: 30px;
+}
+.btn-back:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(107, 114, 128, 0.5);
+    color: white;
+}
+</style>
+
+<div class="applications-container">
+    <div class="page-header">
+        <h1>Job Applicants</h1>
+        <p>for: <strong>{{ job.title }}</strong></p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages" style="margin-bottom: 20px;">
+            {% for category, message in messages %}
+                <!-- Style for flash messages -->
+                <div class="flash-box flash-{{ category or 'info' }}" style="padding: 15px; border-radius: 10px; font-weight: 600; margin-bottom: 10px; background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if applications %}
+        <div class="applicant-list">
+            {% for app in applications %}
+                <div class="applicant-card" style="animation-delay: {{ loop.index * 100 }}ms;">
+                    <div class="applicant-header">
+                        <div class="applicant-info">
+                            <h3>
+                                {{ app.user_name }} 
+                                <span class="status-badge status-{{ app.status|lower }}">{{ app.status }}</span>
+                            </h3>
+                            <p><i class="fas fa-envelope"></i> {{ app.user_email }}</p>
+                        </div>
+                        <div class="applicant-profile-strength">
+                            <!-- This is your AIML feature! -->
+                            <div class="strength-number">{{ app.user_profile_strength }}%</div>
+                            <div class="strength-label">Profile Match</div>
+                        </div>
+                    </div>
+
+                    <!-- ***** THIS IS THE NEW SECTION WITH THE BUTTONS ***** -->
+                    <div class="applicant-actions">
+                        <p>Change Status:</p>
+                        
+                        <!-- Show "Interview" button if status is not already Interviewing -->
+                        {% if app.status != 'Interviewing' %}
+                        <form action="{{ url_for('update_status', app_id=app.id) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="job_id" value="{{ job.id }}">
+                            <input type="hidden" name="status" value="Interviewing">
+                            <button type="submit" class="action-btn btn-interview">
+                                <i class="fas fa-comments"></i> Move to Interview
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <!-- Show "Hire" button if status is not already Hired -->
+                        {% if app.status != 'Hired' %}
+                        <form action="{{ url_for('update_status', app_id=app.id) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="job_id" value="{{ job.id }}">
+                            <input type="hidden" name="status" value="Hired">
+                            <button type="submit" class="action-btn btn-hire">
+                                <i class="fas fa-check-circle"></i> Hire
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        <!-- Show "Reject" button if status is not already Rejected -->
+                        {% if app.status != 'Rejected' %}
+                        <form action="{{ url_for('update_status', app_id=app.id) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="job_id" value="{{ job.id }}">
+                            <input type="hidden" name="status" value="Rejected">
+                            <button type="submit" class="action-btn btn-reject">
+                                <i class="fas fa-times-circle"></i> Reject
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <!-- ***** END OF NEW SECTION ***** -->
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- If there are NO applications -->
+        <div class="no-applications-box">
+             <p>No applications for this job yet.</p>
+        </div>
+    {% endif %}
+    
+    <div style="text-align: center;">
+        <a href="{{ url_for('company_dashboard') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

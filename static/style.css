@@ -1,0 +1,39 @@
+/* Basic reset */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+
+body { background: #f7f9fc; color: #222; padding: 24px; }
+
+.container { max-width: 900px; margin: 0 auto; }
+
+h1, h2 { color: #1f2937; margin-bottom: 12px; }
+
+.form-container, .dashboard-container {
+  background: #fff;
+  padding: 18px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(20, 30, 60, 0.06);
+  margin-bottom: 12px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], textarea {
+  width: 100%; padding: 10px; margin: 8px 0 12px; border: 1px solid #e6e9ef; border-radius: 6px;
+}
+
+button, .btn {
+  display: inline-block;
+  background: #2563eb; color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 8px;
+  border: none; cursor: pointer;
+}
+
+.logout { background: #ef4444; }
+
+.progress-bar { width: 100%; background: #e6eefc; border-radius: 6px; margin: 8px 0 12px; height: 14px; }
+.progress { height: 100%; background: linear-gradient(90deg,#34d399,#06b6d4); border-radius: 6px; }
+
+.job-card { background: #fff; border: 1px solid #e6e9ef; padding: 12px; margin-bottom: 10px; border-radius: 6px; }
+
+.flash-box { margin-bottom: 12px; }
+.flash-msg { background: #feffef; border-left: 4px solid #f59e0b; padding: 8px 12px; border-radius: 4px; margin-bottom:6px; }
+
+.warning { color: #b91c1c; margin: 8px 0; }
+.note { color: #374151; margin-top:8px; }

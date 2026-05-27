@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+/* Results Page Styles */
+.results-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.results-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #4361ee, #3a0ca3, #4cc9f0);
+}
+
+.results-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.results-header h2 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 15px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.results-header p {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+/* No Jobs Found State */
+.no-jobs {
+    text-align: center;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 15px;
+    border: 2px dashed #cbd5e1;
+    margin: 30px 0;
+}
+
+.no-jobs p {
+    font-size: 1.3rem;
+    color: #64748b;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+/* Job List Styles */
+.job-list {
+    display: grid;
+    gap: 25px;
+    margin: 40px 0;
+}
+
+.job-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 2px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.job-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: #4361ee;
+}
+
+.job-card h3 {
+    font-size: 1.6rem;
+    color: #1f2937;
+    margin-bottom: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.job-card h3::before {
+    content: '💼';
+    font-size: 1.4rem;
+}
+
+.job-card p {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.job-card strong {
+    color: #374151;
+    font-weight: 600;
+    min-width: 140px;
+}
+
+/* Confidence Badge */
+.confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+/* Action Buttons */
+.results-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 50px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    justify-content: center;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(67, 97, 238, 0.5);
+    color: white;
+}
+
+.btn:active {
+    transform: translateY(-1px);
+}
+
+.btn.profile-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn.profile-btn:hover {
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+}
+
+/* Results Stats */
+.results-stats {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+    border-radius: 12px;
+    border: 2px solid #bfdbfe;
+}
+
+.results-stats p {
+    font-size: 1.2rem;
+    color: #1e40af;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Confidence Level Colors */
+.confidence-high {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+.confidence-medium {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+.confidence-low {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .results-container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    
+    .results-header h2 {
+        font-size: 2rem;
+    }
+    
+    .job-card {
+        padding: 25px 20px;
+    }
+    
+    .job-card h3 {
+        font-size: 1.4rem;
+    }
+    
+    .job-card p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .job-card strong {
+        min-width: auto;
+    }
+    
+    .results-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .results-container {
+        margin: 15px;
+        padding: 25px 20px;
+    }
+    
+    .results-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .no-jobs {
+        padding: 40px 20px;
+    }
+    
+    .no-jobs p {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
+<div class="results-container">
+    <div class="results-header">
+        <h2>Your Job Recommendations</h2>
+        <p>AI-powered matches based on your profile</p>
+    </div>
+
+    {% if not jobs or jobs is none or jobs|length == 0 %}
+        <div class="no-jobs">
+            <p>🎯 No matches found for your skills yet.</p>
+            <p style="font-size: 1rem; color: #94a3b8; margin-top: 10px;">
+                Try updating your profile with more skills and experience to get better matches.
+            </p>
+            <a class="btn profile-btn" href="{{ url_for('profile') }}">
+                <i class="fas fa-user-edit"></i> Update Profile
+            </a>
+        </div>
+    {% else %}
+        <div class="results-stats">
+            <p>🎉 Found {{ jobs|length }} job{{ 's' if jobs|length != 1 }} matching your profile!</p>
+        </div>
+
+        <div class="job-list">
+            {% for job in jobs %}
+            
+                <div class="job-card">
+                    <h3>{{ job.role or "Position Not Specified" }}</h3>
+                    <p>
+                        <strong>🏢 Company:</strong> 
+                        <span>{{ job.company or "Company Not Specified" }}</span>
+                    </p>
+                    <p>
+                        <strong>🎯 Match Confidence:</strong> 
+                        <span class="confidence-badge 
+                            {% if job.confidence and job.confidence >= 80 %}confidence-high
+                            {% elif job.confidence and job.confidence >= 60 %}confidence-medium
+                            {% else %}confidence-low
+                            {% endif %}">
+                            <i class="fas fa-chart-line"></i> 
+                            {{ job.confidence or "N/A" }}%
+                        </span>
+                    </p>
+                    
+                    <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                        <a href="{{ url_for('apply_job', job_id=job.id) }}" class="btn" style="padding: 12px 24px; font-size: 0.95rem;">
+                            <i class="fas fa-paper-plane"></i> Apply Now
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="results-actions">
+        <a class="btn" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        {% if jobs and jobs|length > 0 %}
+            <a class="btn profile-btn" href="{{ url_for('profile') }}">
+                <i class="fas fa-sync-alt"></i> Refine Profile
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to job cards - only if they exist
+    const jobCards = document.querySelectorAll('.job-card');
+    
+    if (jobCards.length > 0) {
+        jobCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+        
+        // ### MODIFICATION ###
+        // We stop the card 'click' from firing when the 'Apply' button is clicked.
+        jobCards.forEach(card => {
+            // Find the apply button *within* this card
+            const applyButton = card.querySelector('a.btn');
+            
+            // Add click effect to the whole card
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function(e) {
+                // Only run the animation if the click was not on the button
+                if (e.target !== applyButton && !applyButton.contains(e.target)) {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                }
+            });
+            
+            // Stop the card's click event from firing when the button is clicked
+            if (applyButton) {
+                applyButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+    }
+    
+    // Add hover effect to confidence badges - only if they exist
+    const confidenceBadges = document.querySelectorAll('.confidence-badge');
+    
+    if (confidenceBadges.length > 0) {
+        confidenceBadges.forEach(badge => {
+            badge.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+            
+            badge.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    }
+    
+    // Safe error handling for any JavaScript issues
+    try {
+        // Additional safe JavaScript can go here
+        console.log('CareerMate results page loaded successfully');
+    } catch (error) {
+        console.error('Error in results page JavaScript:', error);
+    }
+});
+</script>
+{% endblock %}
