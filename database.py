@@ -9,10 +9,10 @@ load_dotenv() # This automatically reads from your .env file
 
 # We only need ONE config, which now reads the password from the .env file
 DB_CONFIG = {
-    'host': os.environ.get('DB_HOST', 'localhost'),
-    'user': os.environ.get('DB_USER', 'root'),
-    'password': os.environ.get('DB_PASSWORD'), # This now works automatically!
-    'database': os.environ.get('DB_NAME', 'careermate_db')
+    'host': os.environ.get('DB_HOST') or os.environ.get('MYSQL_ADDON_HOST', 'localhost'),
+    'user': os.environ.get('DB_USER') or os.environ.get('MYSQL_ADDON_USER', 'root'),
+    'password': os.environ.get('DB_PASSWORD') or os.environ.get('MYSQL_ADDON_PASSWORD'),
+    'database': os.environ.get('DB_NAME') or os.environ.get('MYSQL_ADDON_DB', 'careermate_db')
 }
 
 # We only need ONE connection function
